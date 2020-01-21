@@ -1,6 +1,6 @@
 import numpy as np
 from colorama import Fore, Back, Style
-
+from config import *
 
 class Character():
 
@@ -15,12 +15,14 @@ class Character():
 
 		self.position = [x,y]
 
-		self.lives = 5
+		self.lives = LIVES
 		self.score = 0
+		self.time = TIME
 
 	def get_stats(self):
 
-		thestats = '\tLIVES: ' + str(self.lives) + '\tSCORE: ' + str(self.score) + '\n'
+		thestats = '\t\tLIVES: ' + str(self.lives) + '\t\tSCORE: ' + str(self.score) + '\t\tTIME REMAINING: ' + str(self.time).zfill(3) + '\n'
 		return thestats
 
+			
 	
