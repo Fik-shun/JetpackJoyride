@@ -47,6 +47,9 @@ class Magnet(Object):
 	def __init__(self,x,y):
 		Object.__init__(self,x,y)
 
+		self.xrange = 0
+		self.yrange = 0
+
 		self.matrix = np.full((2, 2), "+")
 		self.matrix[0] = [chr(9552),chr(9559)]
 		self.matrix[1] = [chr(9552),chr(9565)]

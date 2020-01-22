@@ -7,7 +7,6 @@ WIDTH = 100000
 
 # for bg
 # speed = move/time
-BG_MOVE = 1
 BG_TIME = 0.08
 
 
