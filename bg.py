@@ -126,6 +126,7 @@ class BG():
 		h,w = objs[4].matrix.shape
 		self.matrix[y:y+h,x:x+w] = objs[4].matrix
 
+		# Dragon Movement
 		if self.subx >= 1.5*self.cols:
 			if y + 13 < player.position[1]:
 				if objs[4].position[1] < self.rows - 33:
@@ -133,6 +134,26 @@ class BG():
 
 			elif objs[4].position[1] > 2:
 				objs[4].position[1] -= 2
+
+
+		# iceBalls display and collision	
+		for iceb in objs[5]:
+			x2,y2 = iceb.position
+			h2,w2 = iceb.matrix.shape
+			if iceb.display == 1:
+				iceb.position[0] -= 5
+				self.matrix[y2:y2+h2,x2:x2+w2] = iceb.matrix
+				x,y = player.position
+				h,w = player.matrix.shape
+				# check collision
+				if (y<=y2<y+h or y2<=y<y2+h2) and (x<=x2<x+w or x2<=x<x2+w2):
+					if player.shield == 0:
+						player.lives -= 1
+					iceb.display = 0		
+
+
+
+
 				
 
 		self.print_matrix(player)	

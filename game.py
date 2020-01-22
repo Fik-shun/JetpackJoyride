@@ -8,7 +8,7 @@ from getch import _getChUnix as getChar
 from bg import BG
 from char import Character
 from objects import HorObst,VerObst,Coin,Magnet
-from bullet import Bullet
+from bullet import Bullet, iceBall
 from boss import Boss
 
 from config import *
@@ -70,6 +70,7 @@ theboss = Boss(2*cols,1)
 beams = [beam,beam2]
 coins = [coin,coin2,coin3,coin4,coin6]
 bulls = []
+icebs = []
 
 
 # Start Time
@@ -87,8 +88,13 @@ while player.lives > 0 and player.time > 0:
 
 	# Moving Screen
 	now = time.time()
-	if now - start > BG_TIME and thebg.subx < 1.5*cols:
-		thebg.move_screen(player)
+	if now - start > BG_TIME:
+		if thebg.subx < 1.5*cols:
+			thebg.move_screen(player)
+		else:
+			iceb = iceBall()
+			iceb.fire([theboss.position[0],player.position[1]+2])
+			icebs.append(iceb)
 		start = now
 
 	# Gravity
@@ -109,7 +115,7 @@ while player.lives > 0 and player.time > 0:
 			
 
 
-	objs = [beams,coins,bulls,mag,theboss]
+	objs = [beams,coins,bulls,mag,theboss,icebs]
 	thebg.print(player,objs)
 
 	# takes cursor to beginning
@@ -128,7 +134,7 @@ while player.lives > 0 and player.time > 0:
 		player.position[1] += player.speed
 	elif char == 'f':
 		bull = Bullet()
-		bull.fire(player)
+		bull.fire([player.position[0]+5,player.position[1]+2])
 		bulls.append(bull)
 	elif char == ' ' and player.shield == 0 and time.time() - player.shieldEnd >= 60:
 		player.shield = 1

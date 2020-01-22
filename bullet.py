@@ -1,15 +1,28 @@
 import numpy as np
 from config import *
 
-class Bullet():
+class Shoot():
 
 	def __init__(self):
 
 		self.matrix = np.full((1, 3), "=")
-		self.matrix[0][2] = '>'
 		self.display = 1
 
-	def fire(self,player):
+	def fire(self,position):
 
-		self.position = [player.position[0]+5,player.position[1]+2]
+		self.position = position
 
+
+class Bullet(Shoot):
+	
+	def __init__(self):
+		Shoot.__init__(self)
+		self.matrix[0][2] = '>'
+
+
+
+class iceBall(Shoot):
+
+	def __init__(self):
+		Shoot.__init__(self)
+		self.matrix[0][0] = '<'
