@@ -8,16 +8,65 @@ class BG():
 	def __init__(self,rows,cols):
 
 		# the matrix of game which will be shown
-		self.rows = rows
-		self.cols = cols
-		self.matrix = np.full((rows, WIDTH), " ")
-		self.matrix[0] = np.full((1, WIDTH), "|")
-		self.matrix[rows-1] = np.full((1, WIDTH), "|")
+		self.__rows = rows
+		self.__cols = cols
+		self.__matrix = np.full((rows, WIDTH), " ")
+		self.__matrix[0] = np.full((1, WIDTH), "|")
+		self.__matrix[rows-1] = np.full((1, WIDTH), "|")
 
-		self.bg_move = 1
+		self.__bg_move = 1
 
-		self.subx = 0
-		self.submatrix = self.matrix[0:rows,0:cols]
+		self.__subx = 0
+		self.__submatrix = self.__matrix[0:rows,0:cols]
+
+
+
+	@property
+	def matrix(self):
+		return self.__matrix
+	@matrix.setter
+	def matrix(self, a):
+		self.__matrix = a	
+
+	@property
+	def rows(self):
+		return self.__rows
+	@rows.setter
+	def rows(self, a):
+		self.__rows = a
+
+	@property
+	def cols(self):
+		return self.__cols
+	@cols.setter
+	def cols(self, a):
+		self.__cols = a
+
+	@property
+	def bg_move(self):
+		return self.__bg_move
+	@bg_move.setter
+	def bg_move(self, a):
+		self.__bg_move = a
+
+	@property
+	def subx(self):
+		return self.__subx
+	@subx.setter
+	def subx(self, a):
+		self.__subx = a
+
+	@property
+	def submatrix(self):
+		return self.__submatrix
+	@submatrix.setter
+	def submatrix(self, a):
+		self.__submatrix = a
+
+	
+	
+
+
 
 	def clear_matrix(self):
 
@@ -183,7 +232,7 @@ class BG():
 			toprint += cell
 		toprint += Style.RESET_ALL
 		if win == 1:
-			a = """                                                                                                                               
+			a = Fore.GREEN+"""                                                                                                                               
       ***** *    **         * ***         ***** *    **           ***** *    **   ***          * ***         ***** *     **    
    ******  *  *****       *  ****      ******  *  *****        ******  *  *****    ***       *  ****      ******  **    **** * 
   **   *  *     *****    *  *  ***    **   *  *     *****     **   *  *     *****   ***     *  *  ***    **   *  * **    ****  
@@ -204,8 +253,9 @@ class BG():
   *************  **                                                                                                            
  *           ****                                                                                                              
                                                                                                                                """
-		else:	
-			a = """                                                                                                                                   
+		else:
+
+			a = Fore.RED + """                                                                                                                                   
       ***** *    **         * ***         ***** *    **           ***** *             * ***          *******      ****           * 
    ******  *  *****       *  ****      ******  *  *****        ******  *            *  ****        *       ***   *  *************  
   **   *  *     *****    *  *  ***    **   *  *     *****     **   *  *            *  *  ***      *         **  *     *********    
