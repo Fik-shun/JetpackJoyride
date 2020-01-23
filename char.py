@@ -6,16 +6,17 @@ class Character():
 
 	def __init__(self,x,y):
 		
-		self.matrix = np.full((5, 4), " ")		
-		self.matrix[0] = [' ',' ',' ','W']
-		self.matrix[1] = ['#','#','[',']']
-		self.matrix[2] = ['#','#','\\','|']
-		self.matrix[3] = ['#','#','|','\\']
-		self.matrix[4] = ['"','"','^','^']
+		self.matrix = np.full((5, 4), " ")	
+
+		self.matrix[0] = [' ',' ',' ','0']
+		self.matrix[1] = ['/','\\','*',' ']
+		self.matrix[2] = ['W','W','|','\\']
+		self.matrix[3] = ['Y','Y',':','\\']
+		self.matrix[4] = ['"','"','/','/']
 
 		self.position = [x,y]
 
-		self.speed = 3
+		self.speed = CHAR_SPEED
 
 		self.lives = LIVES
 		self.score = 0

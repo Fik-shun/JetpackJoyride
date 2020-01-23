@@ -2,12 +2,13 @@ import os
 import time
 import signal
 import math
+import random
 from alarmexception import AlarmException
 from getch import _getChUnix as getChar
 
 from bg import BG
 from char import Character
-from objects import HorObst,VerObst,Coin,Magnet
+from objects import HorObst,VerObst,DiagObst,Coin,Magnet
 from bullet import Bullet, iceBall
 from boss import Boss
 
@@ -33,73 +34,93 @@ def user_input(timeout=0.1):
 	return ''
 
 
-#getting rows&cols of screen
+# getting rows&cols of screen
 rows, cols = os.popen('stty size', 'r').read().split()
 rows = int(rows) - 3
 cols = int(cols)
 
-#the background
+# the background
 thebg = BG(rows,cols)
 
 
-#player
+# player
 player = Character(5,rows-6)
 
 
 # Objects
-beam = HorObst(int(cols/3),int((rows-4)/2))
-beam2 = VerObst(3*int(cols/4),int((rows-4)/4))
 
-coin = Coin(6*int(cols/7),int((rows-4)/7))
-coin2 = Coin(6*int(cols/11),int((rows-4)/7))
+beams = []
+coins = []
+
+# Obstacles
+for i in range(random.randint(1,7)):
+	beams.append(HorObst(random.randint(int(cols/10),int((DRGN_APPRS-0.5)*cols-OBST_LEN)),random.randint(4,rows-5-2)))
+for i in range(random.randint(1,7)):
+	beams.append(VerObst(random.randint(int(cols/10),int((DRGN_APPRS-0.5)*cols-2)),random.randint(4,rows-5-OBST_LEN)))
+for i in range(random.randint(1,3)):
+	beams.append(DiagObst(random.randint(int(cols/10),int((DRGN_APPRS-0.5)*cols-OBST_LEN)),random.randint(4,rows-5-OBST_LEN)))
+
+# Coins
+for i in range(random.randint(10,25)):
+	coins.append(Coin(random.randint(int(cols/10),int((DRGN_APPRS-0.5)*cols)),random.randint(4,rows-5)))
 
 
-magx = 14*int(cols/11)
-magy = int((rows-4)/7)
+# Magnet
+magx = random.randint(int(cols/10),int((DRGN_APPRS-0.5)*cols))
+magy = random.randint(4,rows-5)
 mag = Magnet(magx,magy)
 mag.xrange = int((cols)/4)
 mag.yrange = int(2*(rows-4)/3) - 2
 
-coin3 = Coin(magx,magy+mag.yrange)
-coin4 = Coin(magx+mag.xrange,magy)
-coin6 = Coin(magx-mag.xrange,magy)
 
-theboss = Boss(2*cols,1)
+# Magnetic border coins
+if magy + mag.yrange < rows - 4:
+	coins.append(Coin(magx,magy+mag.yrange))
+if magy - mag.yrange > 2:
+	coins.append(Coin(magx,magy-mag.yrange))
+coins.append(Coin(magx+mag.xrange,magy))
+coins.append(Coin(magx-mag.xrange,magy))
 
-
-beams = [beam,beam2]
-coins = [coin,coin2,coin3,coin4,coin6]
 bulls = []
+
+theboss = Boss(DRGN_APPRS*cols,1)
+
 icebs = []
+
+objs = [beams,coins,bulls,mag,theboss,icebs]
 
 
 # Start Time
 gamestart = time.time()
 start = gamestart
+uptime = gamestart
 
+while player.lives > 0 and player.time > 0 and theboss.lives > 0:
 
-while player.lives > 0 and player.time > 0:
-
+	# Shield time
 	player.time = int(TIME + gamestart - time.time())
 	if player.shield == 1 and time.time() - player.shieldStart >= 10:
 		player.matrix[0][0] = ' '
 		player.shield = 0
 		player.shieldEnd = time.time()
 
-	# Moving Screen
+	# Moving Screen, and iceBalls firing
 	now = time.time()
 	if now - start > BG_TIME:
-		if thebg.subx < 1.5*cols:
+		if thebg.subx < (DRGN_APPRS-0.5)*cols:
 			thebg.move_screen(player)
-		else:
+		elif theboss.lives > 0:
 			iceb = iceBall()
-			iceb.fire([theboss.position[0],player.position[1]+2])
+			if player.position[1]+2 <= theboss.position[1]+theboss.matrix.shape[0]-1:
+				iceb.fire([theboss.position[0],player.position[1]+2])
+			else:
+				iceb.fire([theboss.position[0],theboss.position[1]+theboss.matrix.shape[0]-1])
+				
 			icebs.append(iceb)
 		start = now
 
-	# Gravity
-	if player.position[1] < rows - 1 - player.matrix.shape[0]:
-		player.position[1] += 1
+
+
 
 	# Magnet 
 	if math.pow(abs(magx - player.position[0]),2)/math.pow(mag.xrange,2) + math.pow(abs(magy - player.position[1]),2)/math.pow(mag.yrange,2) <=  1:  
@@ -111,8 +132,13 @@ while player.lives > 0 and player.time > 0:
 		if player.position[1] + 1 >= magy:
 			player.position[1] -= 2		
 		else:
-			player.position[1] += 2		
+			player.position[1] += 2	
+		uptime = time.time()
+				
 			
+	# Gravity
+	elif player.position[1] < rows - 1 - player.matrix.shape[0]:
+		player.position[1] += int(4*(time.time()-uptime))
 
 
 	objs = [beams,coins,bulls,mag,theboss,icebs]
@@ -130,6 +156,7 @@ while player.lives > 0 and player.time > 0:
 		player.position[0] -= player.speed
 	elif char == 'w':
 		player.position[1] -= player.speed
+		uptime = time.time()
 	elif char == 's':
 		player.position[1] += player.speed
 	elif char == 'f':
@@ -146,7 +173,11 @@ while player.lives > 0 and player.time > 0:
 
 	elif char == 'q' or char == 'Q':	
 		break	
-	
-thebg.print_gameEnd()
+
+win = 0
+if theboss.lives == 0:
+	win = 1
+thebg.print_gameEnd(win)
+
 
 

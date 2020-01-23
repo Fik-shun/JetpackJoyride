@@ -34,7 +34,16 @@ class VerObst(Object):
 
 		self.matrix[0] = [chr(9121),chr(9124)]
 		self.matrix[OBST_LEN-1] = [chr(9123),chr(9126)]
-		
+
+
+class DiagObst(Object):
+
+	def __init__(self,x,y):
+		Object.__init__(self,x,y)
+		self.matrix = np.full((OBST_LEN,OBST_LEN), ' ')
+
+		np.fill_diagonal(self.matrix, '\\')
+
 
 class Coin(Object):
 	def __init__(self,x,y):

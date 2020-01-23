@@ -36,10 +36,12 @@ class BG():
 		toprint += Style.RESET_ALL
 
 		toprint += '\n'
+		toprint += Fore.YELLOW
 		for row in self.submatrix[1:self.rows-1]:
 			for cell in row:
 				toprint += cell
 			toprint += '\n'
+		toprint += Style.RESET_ALL
 		
 		toprint += Back.RED + Fore.BLACK
 		for cell in self.submatrix[self.rows-1]:
@@ -104,7 +106,7 @@ class BG():
 			x2,y2 = bull.position
 			h2,w2 = bull.matrix.shape
 			if bull.display == 1:
-				bull.position[0] += 5
+				bull.position[0] += BULL_SPEED
 				self.matrix[y2:y2+h2,x2:x2+w2] = bull.matrix
 				for obstacle in objs[0]:
 					if obstacle.display == 1:
@@ -115,25 +117,34 @@ class BG():
 							player.score += 1
 							obstacle.display = 0
 							bull.display = 0
-
+				if self.subx >= (DRGN_APPRS-0.5)*self.cols:
+						x,y = objs[4].position
+						h,w = objs[4].matrix.shape
+						# check collision
+						if (y<=y2<y+h or y2<=y<y2+h2) and (x<=x2<x+w or x2<=x<x2+w2):
+							player.score += 1
+							objs[4].lives -= 1
+							obstacle.display = 0
+							bull.display = 0	
 		# magnet				
 		x,y = objs[3].position
 		h,w = objs[3].matrix.shape
 		self.matrix[y:y+h,x:x+w] = objs[3].matrix
 		
 		# Dragon				
-		x,y = objs[4].position
-		h,w = objs[4].matrix.shape
-		self.matrix[y:y+h,x:x+w] = objs[4].matrix
+		if objs[4].lives > 0:
+			x,y = objs[4].position
+			h,w = objs[4].matrix.shape
+			self.matrix[y:y+h,x:x+w] = objs[4].matrix
 
-		# Dragon Movement
-		if self.subx >= 1.5*self.cols:
-			if y + 13 < player.position[1]:
-				if objs[4].position[1] < self.rows - 33:
-					objs[4].position[1] += 2
+			# Dragon Movement
+			if self.subx >= (DRGN_APPRS-0.5)*self.cols:
+				if y + 13 < player.position[1]:
+					if objs[4].position[1] < self.rows - 2 - objs[4].matrix.shape[0]:
+						objs[4].position[1] += DRGN_SPEED
 
-			elif objs[4].position[1] > 2:
-				objs[4].position[1] -= 2
+				elif objs[4].position[1] > DRGN_SPEED:
+					objs[4].position[1] -= DRGN_SPEED
 
 
 		# iceBalls display and collision	
@@ -141,7 +152,7 @@ class BG():
 			x2,y2 = iceb.position
 			h2,w2 = iceb.matrix.shape
 			if iceb.display == 1:
-				iceb.position[0] -= 5
+				iceb.position[0] -= ICEB_SPEED
 				self.matrix[y2:y2+h2,x2:x2+w2] = iceb.matrix
 				x,y = player.position
 				h,w = player.matrix.shape
@@ -164,18 +175,63 @@ class BG():
 		player.position[0] += self.bg_move
 
 
-	def print_gameEnd(self):
+	def print_gameEnd(self,win):
 		self.submatrix = np.full((self.rows, self.cols), " ")
 
 		toprint = Back.BLUE + Fore.BLACK		
 		for cell in self.submatrix[0][1:]:
 			toprint += cell
 		toprint += Style.RESET_ALL
-
-		toprint += '\n'
-		for row in self.submatrix[1:self.rows-1]:
-			for cell in row:
-				toprint += cell
+		if win == 1:
+			a = """                                                                                                                               
+      ***** *    **         * ***         ***** *    **           ***** *    **   ***          * ***         ***** *     **    
+   ******  *  *****       *  ****      ******  *  *****        ******  *  *****    ***       *  ****      ******  **    **** * 
+  **   *  *     *****    *  *  ***    **   *  *     *****     **   *  *     *****   ***     *  *  ***    **   *  * **    ****  
+ *    *  **     * **    *  **   ***  *    *  **     * **     *    *  **     * **      **   *  **   ***  *    *  *  **    * *   
+     *  ***     *      *  ***    ***     *  ***     *            *  ***     *         **  *  ***    ***     *  *    **   *     
+    **   **     *     **   **     **    **   **     *           **   **     *         ** **   **     **    ** **    **   *     
+    **   **     *     **   **     **    **   **     *           **   **     *         ** **   **     **    ** **     **  *     
+    **   **     *     **   **     **    **   **     *           **   **     *         ** **   **     **    ** **     **  *     
+    **   **     *     **   **     **    **   **     *           **   **     *         ** **   **     **    ** **      ** *     
+    **   **     *     **   **     **    **   **     *           **   **     *         ** **   **     **    ** **      ** *     
+     **  **     *      **  **     **     **  **     *            **  **     *         **  **  **     **    *  **       ***     
+      ** *      *       ** *      *       ** *      *             ** *      *         *    ** *      *        *        ***     
+       ***      *        ***     *         ***      *              ***      ***      *      ***     *     ****          **     
+        *********         *******           ********                ******** ********        *******     *  *****              
+          **** ***          ***               ****                    ****     ****            ***      *     **               
+                ***                                                                                     *                      
+    ********     ***                                                                                     **                    
+  *************  **                                                                                                            
+ *           ****                                                                                                              
+                                                                                                                               """
+		else:	
+			a = """                                                                                                                                   
+      ***** *    **         * ***         ***** *    **           ***** *             * ***          *******      ****           * 
+   ******  *  *****       *  ****      ******  *  *****        ******  *            *  ****        *       ***   *  *************  
+  **   *  *     *****    *  *  ***    **   *  *     *****     **   *  *            *  *  ***      *         **  *     *********    
+ *    *  **     * **    *  **   ***  *    *  **     * **     *    *  *            *  **   ***     **        *   *     *  *         
+     *  ***     *      *  ***    ***     *  ***     *            *  *            *  ***    ***     ***           **  *  **         
+    **   **     *     **   **     **    **   **     *           ** **           **   **     **    ** ***            *  ***         
+    **   **     *     **   **     **    **   **     *           ** **           **   **     **     *** ***         **   **         
+    **   **     *     **   **     **    **   **     *           ** **           **   **     **       *** ***       **   **         
+    **   **     *     **   **     **    **   **     *           ** **           **   **     **         *** ***     **   **         
+    **   **     *     **   **     **    **   **     *           ** **           **   **     **           ** ***    **   **         
+     **  **     *      **  **     **     **  **     *           *  **            **  **     **            ** **     **  **         
+      ** *      *       ** *      *       ** *      *              *              ** *      *              * *       ** *      *   
+       ***      *        ***     *         ***      *          ****           *    ***     *     ***        *         ***     *    
+        *********         *******           ********          *  *************      *******     *  *********           *******     
+          **** ***          ***               ****           *     *********          ***      *     *****               ***       
+                ***                                          *                                 *                                   
+    ********     ***                                          **                                **                                 
+  *************  **                                                                                                                
+ *           ****                                                                                                                  
+                                                                                                                                   """
+		lines = a.split('\n')
+		for i in range(21):
+			self.submatrix[i] = [c for c in lines[i]] + [' ']*(self.cols-len(lines[i]))
+		for i in range(self.rows):
+			for j in range(self.cols):
+				toprint += self.submatrix[i][j]
 			toprint += '\n'
 		
 		toprint += Back.RED + Fore.BLACK

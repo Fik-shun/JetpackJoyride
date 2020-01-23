@@ -18,6 +18,16 @@ OBST_LEN = 11
 # for char 
 LIVES = 5
 TIME = 120
+# init speed of char
+CHAR_SPEED = 3
 
 
+BULL_SPEED = 5
 
+
+DRGN_LIVES = 5
+DRGN_APPRS = 3
+
+DRGN_SPEED = 2
+
+ICEB_SPEED = 5

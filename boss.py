@@ -8,7 +8,7 @@ class Boss():
 		self.position = [x,y]
 		self.display = 1
 		self.matrix = np.full((31, 65), " ")
-
+		self.lives = DRGN_LIVES
 
 
 		a = """                                         _\\/
